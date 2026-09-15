@@ -1,0 +1,28 @@
+name: Build Genesis ROM
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install vasm compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y vasm-m68k-mot
+
+      - name: Assemble ROM
+        run: |
+          vasmm68k_mot -Fbin -nosym -o game.bin game.asm
+
+      - name: Upload Genesis ROM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: genesis-rom
+          path: game.bin
