@@ -12,9 +12,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Build ROM using SGDK Docker Container
+      - name: Install M68K GCC
         run: |
-          docker run --rm -v ${{ github.workspace }}:/m68k ghcr.io/stephane-d/sgdk:latest /bin/bash -c "m68k-elf-gcc -c -m68000 game.asm -o game.o && m68k-elf-objcopy -O binary game.o game.bin"
+          sudo apt-get update
+          sudo apt-get install -y gcc-m68k-linux-gnu
+
+      - name: Assemble ROM
+        run: |
+          m68k-linux-gnu-gcc -c game.asm -o game.o
+          m68k-linux-gnu-objcopy -O binary game.o game.bin
 
       - name: Upload Genesis ROM Artifact
         uses: actions/upload-artifact@v4
