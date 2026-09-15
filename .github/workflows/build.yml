@@ -12,10 +12,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install vasm compiler
+      - name: Download and Build VASM
         run: |
-          sudo apt-get update
-          sudo apt-get install -y vasm-m68k-mot
+          curl -O http://sun.hasenbraten.de/vasm/daily/vasm.tar.gz
+          tar -xzf vasm.tar.gz
+          cd vasm
+          make CPU=m68k SYNTAX=mot
+          sudo cp vasmm68k_mot /usr/local/bin/
 
       - name: Assemble ROM
         run: |
