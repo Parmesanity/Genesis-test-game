@@ -1,0 +1,29 @@
+name: Build Genesis ROM
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install M68K GCC Toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-m68k-linux-gnu
+
+      - name: Compile Genesis ROM
+        run: |
+          m68k-linux-gnu-gcc -O2 -nobss -nostdlib -m68000 -Ttext 0x0 main.c -o main.elf
+          m68k-linux-gnu-objcopy -O binary main.elf game.bin
+
+      - name: Upload Genesis ROM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: genesis-rom
+          path: game.bin
