@@ -12,16 +12,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install asm68k
-        run: sudo npm install -g asm68k
-
-      - name: Assemble Genesis ROM
-        run: asm68k game.asm game.bin
+      - name: Build ROM using SGDK Docker Container
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/m68k ghcr.io/stephane-d/sgdk:latest /bin/bash -c "m68k-elf-gcc -c -m68000 game.asm -o game.o && m68k-elf-objcopy -O binary game.o game.bin"
 
       - name: Upload Genesis ROM Artifact
         uses: actions/upload-artifact@v4
